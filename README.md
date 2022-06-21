@@ -83,7 +83,7 @@ This section builds and tests the robo advisor by way of the following steps:
 
 (2.) When the build finishes, test it in the “Test bot” pane. The following animation shows a sample test conversation:
 
-![TestBot.](TestBot.mov)
+![TestBot.](TestBot.gif)
 
 
 __PART III: Enhance the Robo Advisor with an Amazon Lambda Function__ 
@@ -104,7 +104,12 @@ To enhance your Amazon Lex bot with Lambda, please follow the following steps:
 
 (6.) When the build finishes, test it in the “Test bot” pane. The following animation shows a sample test conversation:
 
-<video src="Lambda.mov" controls="controls" style="max-width: 730px;">
+![Lambda.](Lambda.gif)
+
+---
+## Usage
+
+By adjusting the code in the Lambda script, this Retirement Robo Advisor can be curtailed to custom specifications.
 
 ---
 ## Contributors
