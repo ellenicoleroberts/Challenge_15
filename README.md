@@ -1,6 +1,6 @@
 <img src= "images/robo.jpeg" width="930" height="300">
 
-# Machine Learning Trading Bot
+# Robo Advisor for Retirement Planning
 
 Through the use of robo advisors, machine learning and NLP are disrupting finance to improve the customer experience. Retirement-plan providers, who want to increase their client portfolio (especially by engaging young people), are increasingly turning to robo advisors to provide client investment portfolio recommendations for retirement.
 
@@ -9,84 +9,102 @@ The code included in this repo is designed for a retirement provider to offer su
 ---
 ## Technologies
 
-This application leverages python 3.7 with the following packages that need additional installation:
+This repo consists of instructions for building a robo advisor bot in [Amazon Lex](https://us-west-2.console.aws.amazon.com/lex/home?region=us-west-2#bots:), with and without enhancement by [Amazon Lambda](https://us-west-2.console.aws.amazon.com/lambda/home?region=us-west-2#/functions). Consult their respective links for further information regrading both technologies.
 
-* pandas: an open-source library that offers easy-to-use data analysis tools for Python.
-* matplotlib: a comprehensive library for creating static, animated, and interactive visualizations in Python.
-* hvplot.pandas: a visualization library included in the PyViz package that can produce advanced charts and interactive visualizations. 
-* sklearn: a Python library for machine learning and statistical modeling including tools for classification, regression, clustering and dimensionality reduction.
+Further, the included Python script in this repo (the code for the Lambda enhancement) leverages python 3.7 with the following packages that require no additional installation:
+
+* datetime: module that supplies classes for manipulating dates and times. 
+* relativedelta: module designed to be applied to an existing datetime and can replace specific components of that datetime, or represents an interval of time.
 
 ---
 ## Installation Guide
 
-Begin by cloning the GitHub repo (the same repo that this README.md file is contained within) into your terminal. 
+This Installation Guide will guide the reader step-by-step in the configuration of an Amazon Lex bot.
 
-Then activate the correct environment by inputting the following command into your terminal:
 
-`conda activate dev`
+__PART I: Configure the Initial Robo Advisor__
 
-Within this environment, next install the above listed dependencies. To do so, in your terminal while in this same repo, enter `pip install -r requirements.txt`.
+This section creates the robo advisor bot and adds an intent with its corresponding slots by way of the following steps:
 
-The hvPlot library needs to be installed seperately. To do so, in your terminal enter `conda install -c pyviz hvplot`.
+(1.) Sign in to your AWS Management Console and create a [new custom Amazon Lex bot](https://us-west-2.console.aws.amazon.com/lex/home?region=us-west-2#bots:) with the following criteria:
 
-Next, while in your IDE, open the "machine_learning_trading_bot.ipynb" notebook file and run the code. 
+* Bot name: RoboAdvisor
 
----
-## Usage
+* Language: English (US)
 
-__PART I: Establish a Baseline Performance__
+* Output voice: Salli
 
-This section establishes a baseline performance for the trading algorithm through the following steps:
+* Session timeout: 5 minutes
 
-(1) The OHLCV dataset is imported into a Pandas DataFrame.
+* Sentiment analysis: No
 
-(2) Trading signals are generated using short- and long-window SMA values.
+* COPPA: No
 
-(3) The data is split into training and testing datasets.
+* Advanced options: No
 
-(4) The training data is fit to a SVC classifier model and predictions are made based on the testing data. 
+* All other options: The default value
 
-(5) A classification report is generated for the SVC model predictions.
+(2.) Add a new intent, and name it recommendPortfolio.
 
-(6) A predictions DataFrame that contains columns for “Predicted” values, “Actual Returns”, and “Strategy Returns” is created.
+(3.) Configure sample utterances as follows:
 
-(7) A cumulative return plot showing the actual returns vs. the strategy returns is generated.
+* I want to save money for my retirement
 
-Using a __three month-long training dataset__, a __short SMA window of four months__, and a __long SMA window of 100 months__ as a baseline parameter combination, the following cumulative returns are generated, which totaled to a __1.52x profit__ for every dollar invested:
+* I'm {age} and I would like to invest for my retirement
 
-![ClusterApproachesCompared.](images/svm.png)
+* I'm ​{age} and I want to invest for my retirement
 
-__PART II: Tuning the Baseline Trading Algorithm__
+* I want the best option to invest for my retirement
 
-As per the steps listed immediately below, this section tunes the baseline trading algorithm by adjusting the model’s input features to find the parameters that result in the best trading outcome. The best outcome is chosen by comparing the cumulative products of the strategy returns. 
+* I'm worried about my retirement
 
-(1) The size of the training dataset is adjusted by slicing the data into different time periods. The notebook is re-run with the updated parameters.
+* I want to invest for my retirement
 
-(2) The window length of the SMA input features are adjusted (both the short window and the long window). This notebook is re-run with the updated parameters.
+* I would like to invest for my retirement
 
-__RESULTS__: The best parameters for generating the most cumulative profit for this SVM model are a __three month-long training dataset__, a __short SMA window of one month__, and a __long SMA window of 130 months__. The following cumulative returns were generated with this model and parameter combination, which totaled to a __1.78x profit__ for every dollar invested:
+(4.) Create four slots, as the following image specifies:
 
-![ClusterApproachesCompared.](images/bestsvm.png)
+![Slots.](images/slots.png)
 
-This is considerably better than the baseline model that generated 1.52x profit.
+(5.) Mark all the slots as required.
 
-__PART III: Evaluate a New Machine Learning Classifier__
+(6.) Move to the “Confirmation prompt” section, and then set the following messages: 
 
-In this section, a new classifier is examined. The code is setup for a LogisticRegression model.
+* *Confirm: Thanks, now I will look for the best investment portfolio for you.*
 
-Using the original training data as the baseline model, a LogisticRegression model is fit to the training data and backtested to evaluate its performance. 
+* *Cancel: I will be pleased to assist you in the future.*
 
-Using a __three month-long training dataset__, a __short SMA window of four months__, and a __long SMA window of 100 months__ (the baseline parameter combination), the following cumulative returns are generated:
 
-![ClusterApproachesCompared.](images/lr.png)
+__PART II: Build and Test the Robo Advisor__
 
-Based off of cumulative returns with this strategy, this model underperformed our baseline, SVM model with baseline parameters as it only generated a __1.14x profit__ (baseline generated 1.52x profit).
+This section builds and tests the robo advisor by way of the following steps:
 
-## Evaluation Report
+(1.) Click the Build button (in the upper-right corner of the page).
 
-After trying a number of different parameter combinations (altering length of training dataset and length of SMA short and long windows) of both the SVM and the LogisticRegression models, the best model was determined to be LogisticRegression using a __three month-long training dataset__, a __two-month short SMA window__, and a __170-month long SMA window__. The following cumulative returns were generated with this model and parameter combination, which totaled to a __1.94x profit__ for every dollar invested:
+(2.) When the build finishes, test it in the “Test bot” pane. The following animation shows a sample test conversation:
 
-![ClusterApproachesCompared.](images/best.png)
+![TestBot.](TestBot.mov)
+
+
+__PART III: Enhance the Robo Advisor with an Amazon Lambda Function__ 
+
+This section guides the reader through the addition of the Amazon Lambda functionality to validate the data that a user supplies during a conversation with the robo advisor. 
+
+To enhance your Amazon Lex bot with Lambda, please follow the following steps:
+
+(1.) In the online code editor of Amazon Lambda, delete the AWS-generated default lines of code and paste in the provided lambda_function.py (included in this repo).
+
+(2.) Click on the Deploy button.
+
+(3.) Open the Amazon Lex console and navigate to the recommendPortfolio bot configuration. Integrate the Lambda function into the bot by selecting it in the “Lambda initialization and validation” and “Fulfillment” sections.
+
+(4.) In the “Confirmation prompt” section, uncheck the boxes previously checked in PART I, Step #6 of this installation Guide.
+
+(5.) Click the Build button (in the upper-right corner of the page).
+
+(6.) When the build finishes, test it in the “Test bot” pane. The following animation shows a sample test conversation:
+
+<video src="Lambda.mov" controls="controls" style="max-width: 730px;">
 
 ---
 ## Contributors
